@@ -46,15 +46,24 @@ app.use(express.json());
         <html>
           <head>
             <title>Requête reçue</title>
+            <meta http-equiv="refresh" content="2">
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              h1 { color: #333; }
+              p { margin: 5px 0; }
+              .label { font-weight: bold; }
+            </style>
           </head>
           <body>
             <h1>Requête reçue</h1>
-            <p><strong>Méthode :</strong> ${req.method}</p>
-            <p><strong>URL :</strong> ${req.originalUrl}</p>
-            <p><strong>Corps :</strong> ${JSON.stringify(req.body)}</p>
+            <p><span class="label">Méthode :</span> ${req.method}</p>
+            <p><span class="label">URL :</span> ${req.originalUrl}</p>
+            <p><span class="label">Corps :</span> ${JSON.stringify(req.body)}</p>
+            <p><em>Cette page se met à jour toutes les 2 secondes.</em></p>
           </body>
         </html>
       `);
+
 
       res.json({
         message: 'Requête reçue',
