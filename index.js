@@ -150,7 +150,9 @@ app.use((req, res, next) => {
     client.write(`data: ${JSON.stringify(data)}\n\n`);
   });
 
-  res.send('Requête interceptée');
+  const reponse = `CONNECT\r\nOK\r\n${infos}\r\nOK\r\nKHTTP_IND: 1,3\r\n`;
+  
+  res.send(reponse);
 });
 
 app.listen(port, () => {
