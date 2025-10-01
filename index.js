@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -76,3 +77,82 @@ app.use(express.json());
     app.listen(port, () => {
       console.log(`Serveur lancé sur le port ${port}`);
     });
+*/
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+let clients = [];
+
+app.use(express.json());
+
+// Route SSE pour le client web
+app.get('/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  clients.push(res);
+
+  req.on('close', () => {
+    clients = clients.filter(c => c !== res);
+  });
+});
+
+// Page HTML affichée dans le navigateur
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Suivi des requêtes REST</title>
+      <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .entry { margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+      </style>
+    </head>
+    <body>
+      <h1>Requêtes REST reçues</h1>
+      <div id="log"></div>
+
+      <script>
+        const log = document.getElementById('log');
+        const eventSource = new EventSource('/events');
+
+        eventSource.onmessage = function(event) {
+          const data = JSON.parse(event.data);
+          const entry = document.createElement('div');
+          entry.className = 'entry';
+          entry.innerHTML = \`
+            <strong>Méthode :</strong> \${data.method}<br>
+            <strong>URL :</strong> \${data.url}<br>
+            <strong>Corps :</strong> \${JSON.stringify(data.body)}
+          \`;
+          log.prepend(entry);
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+// Middleware qui intercepte toutes les requêtes REST
+app.use((req, res, next) => {
+  const data = {
+    method: req.method,
+    url: req.originalUrl,
+    body: req.body
+  };
+
+  clients.forEach(client => {
+    client.write(`data: ${JSON.stringify(data)}\n\n`);
+  });
+
+  res.send('Requête interceptée');
+});
+
+app.listen(port, () => {
+  console.log(`Serveur lancé sur le port ${port}`);
+});
