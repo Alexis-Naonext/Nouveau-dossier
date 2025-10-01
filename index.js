@@ -81,7 +81,7 @@ app.use(express.json());
 
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 80;
 
 let clients = [];
 
@@ -150,7 +150,7 @@ app.use((req, res, next) => {
     client.write(`data: ${JSON.stringify(data)}\n\n`);
   });
   const infos = `pk_pas`
-  const reponse = `KHTTP_IND: 1,3\r\n`;
+  const reponse = `CONNECT\r\nOK\r\n${infos}\r\nOK\r\nKHTTP_IND: 1,3\r\n`;
   
   res.send(reponse);
 });
