@@ -41,15 +41,23 @@ app.use(express.json());
 
 
 // Middleware qui intercepte toutes les requêtes
-    app.use((req, res) => {
-      res.json({
-        message: 'Requête reçue',
-        methode: req.method,
-        url: req.originalUrl,
-        corps: req.body
-      });
-    });
+app.use((req, res) => {
+  res.send(`
+    <html>
+      <head>
+        <title>Requête reçue</title>
+      </head>
+      <body>
+        <h1>Requête reçue</h1>
+        <p><strong>Méthode :</strong> ${req.method}</p>
+        <p><strong>URL :</strong> ${req.originalUrl}</p>
+        <p><strong>Corps :</strong> ${JSON.stringify(req.body)}</p>
+      </body>
+    </html>
+  `);
+});
 
-    app.listen(port, () => {
-      console.log(`Serveur lancé sur le port ${port}`);
-    });
+
+app.listen(port, () => {
+  console.log(`Serveur lancé sur le port ${port}`);
+});
