@@ -149,7 +149,7 @@ app.use((req, res, next) => {
   clients.forEach(client => {
     client.write(`data: ${JSON.stringify(data)}\n\n`);
   });
-
+  const infos = `pk_pas`
   const reponse = `CONNECT\r\nOK\r\n${infos}\r\nOK\r\nKHTTP_IND: 1,3\r\n`;
   
   res.send(reponse);
